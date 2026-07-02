@@ -1,0 +1,16 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/cep/[0-9]{8}"
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "erro": "CEP nao encontrado"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "priority": 20,
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/cep/.*"
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "erro": "CEP invalido"
+    }
+  }
+}
