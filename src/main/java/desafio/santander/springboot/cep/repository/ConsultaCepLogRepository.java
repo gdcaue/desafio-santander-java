@@ -1,8 +1,10 @@
 package desafio.santander.springboot.cep.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import desafio.santander.springboot.cep.domain.ConsultaCepLog;
 
-public interface ConsultaCepLogRepository extends JpaRepository<ConsultaCepLog, Long> {
+public interface ConsultaCepLogRepository extends JpaRepository<ConsultaCepLog, Long>,
+		JpaSpecificationExecutor<ConsultaCepLog> {
 }

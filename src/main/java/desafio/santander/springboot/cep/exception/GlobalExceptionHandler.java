@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import desafio.santander.springboot.cep.dto.ErroResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -23,10 +24,15 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler({
 			ConstraintViolationException.class,
 			MethodArgumentNotValidException.class,
-			HandlerMethodValidationException.class
+			HandlerMethodValidationException.class,
+			MethodArgumentTypeMismatchException.class,
+			FiltroConsultaInvalidoException.class
 	})
 	public ResponseEntity<ErroResponse> handleValidacao(Exception exception) {
-		return buildResponse(HttpStatus.BAD_REQUEST, "Requisicao invalida", "CEP deve conter exatamente 8 digitos numericos");
+		String mensagem = exception instanceof FiltroConsultaInvalidoException
+				? exception.getMessage()
+				: "Parametros da requisicao invalidos";
+		return buildResponse(HttpStatus.BAD_REQUEST, "Requisicao invalida", mensagem);
 	}
 
 	@ExceptionHandler(ErroIntegracaoCepException.class)
