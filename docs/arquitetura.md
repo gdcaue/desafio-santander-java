@@ -94,7 +94,8 @@ Comportamentos esperados:
 * `200 OK`: CEP encontrado.
 * `400 Bad Request`: CEP com formato inválido.
 * `404 Not Found`: CEP não encontrado na API externa.
-* `500 Internal Server Error`: erro inesperado na aplicação ou indisponibilidade externa não tratada.
+* `502 Bad Gateway`: falha na integração com a API externa.
+* `500 Internal Server Error`: erro inesperado na aplicação.
 
 ### Consultar histórico
 
@@ -150,6 +151,24 @@ Comportamentos esperados:
 * `inicio` e `fim`: filtram por intervalo de data/hora da consulta.
 * `page`: número da página, começando em `0`.
 * `size`: quantidade de registros por página, entre `1` e `100`.
+
+### Resposta padrão de erro
+
+As respostas de erro da API seguem um formato único, sem exposição de stack trace, nome de exceção ou detalhes internos da aplicação.
+
+Exemplo:
+
+```json
+{
+  "timestamp": "2026-07-02T21:30:00",
+  "status": 400,
+  "erro": "Requisicao invalida",
+  "mensagem": "CEP deve conter exatamente 8 digitos numericos",
+  "path": "/api/ceps/abc"
+}
+```
+
+Erros de validação retornam `400 Bad Request`, recursos inexistentes retornam `404 Not Found`, métodos HTTP não permitidos retornam `405 Method Not Allowed`, falhas na integração externa retornam `502 Bad Gateway` e erros inesperados retornam `500 Internal Server Error` com mensagem genérica.
 
 ## Contrato da API externa mockada
 
