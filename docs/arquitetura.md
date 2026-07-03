@@ -112,26 +112,33 @@ GET /api/consultas?success=true
 GET /api/consultas?success=false
 GET /api/consultas?inicio=2026-07-02T00:00:00&fim=2026-07-02T23:59:59
 GET /api/consultas?success=false&inicio=2026-07-02T00:00:00&fim=2026-07-02T23:59:59
+GET /api/consultas?page=0&size=10
 ```
 
 Resposta prevista:
 
 ```json
-[
-  {
-    "id": 1,
-    "cep": "01001000",
-    "logradouro": "Praça da Sé",
-    "bairro": "Sé",
-    "localidade": "São Paulo",
-    "uf": "SP",
-    "httpStatusCode": 200,
-    "success": true,
-    "responseBody": "{\"cep\":\"01001000\",\"logradouro\":\"Praça da Sé\",\"bairro\":\"Sé\",\"localidade\":\"São Paulo\",\"uf\":\"SP\"}",
-    "errorMessage": null,
-    "consultedAt": "2026-07-02T19:30:00"
-  }
-]
+{
+  "content": [
+    {
+      "id": 1,
+      "cep": "01001000",
+      "logradouro": "Praça da Sé",
+      "bairro": "Sé",
+      "localidade": "São Paulo",
+      "uf": "SP",
+      "httpStatusCode": 200,
+      "success": true,
+      "responseBody": "{\"cep\":\"01001000\",\"logradouro\":\"Praça da Sé\",\"bairro\":\"Sé\",\"localidade\":\"São Paulo\",\"uf\":\"SP\"}",
+      "errorMessage": null,
+      "consultedAt": "2026-07-02T19:30:00"
+    }
+  ],
+  "page": 0,
+  "size": 10,
+  "totalElements": 1,
+  "totalPages": 1
+}
 ```
 
 Comportamentos esperados:
@@ -141,6 +148,8 @@ Comportamentos esperados:
 * `success=false`: retorna apenas tentativas com erro retornado pela API externa.
 * `cep`: filtra por um CEP específico.
 * `inicio` e `fim`: filtram por intervalo de data/hora da consulta.
+* `page`: número da página, começando em `0`.
+* `size`: quantidade de registros por página, entre `1` e `100`.
 
 ## Contrato da API externa mockada
 
