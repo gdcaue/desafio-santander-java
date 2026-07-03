@@ -1,7 +1,6 @@
 package desafio.santander.springboot.cep.controller;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -13,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import desafio.santander.springboot.cep.dto.ConsultaCepLogResponse;
+import desafio.santander.springboot.cep.dto.PaginaResponse;
 import desafio.santander.springboot.cep.service.ConsultaCepLogService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
 @Validated
@@ -28,7 +30,7 @@ public class ConsultaCepLogController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<ConsultaCepLogResponse>> listar(
+	public ResponseEntity<PaginaResponse<ConsultaCepLogResponse>> listar(
 			@RequestParam(required = false)
 			@Pattern(regexp = "\\d{8}", message = "CEP deve conter exatamente 8 digitos numericos")
 			String cep,
@@ -39,7 +41,14 @@ public class ConsultaCepLogController {
 			LocalDateTime inicio,
 			@RequestParam(required = false)
 			@DateTimeFormat(iso = ISO.DATE_TIME)
-			LocalDateTime fim) {
-		return ResponseEntity.ok(consultaCepLogService.listar(cep, success, inicio, fim));
+			LocalDateTime fim,
+			@RequestParam(defaultValue = "0")
+			@Min(value = 0, message = "Pagina deve ser maior ou igual a zero")
+			int page,
+			@RequestParam(defaultValue = "10")
+			@Min(value = 1, message = "Tamanho da pagina deve ser maior que zero")
+			@Max(value = 100, message = "Tamanho da pagina deve ser menor ou igual a 100")
+			int size) {
+		return ResponseEntity.ok(PaginaResponse.from(consultaCepLogService.listar(cep, success, inicio, fim, page, size)));
 	}
 }

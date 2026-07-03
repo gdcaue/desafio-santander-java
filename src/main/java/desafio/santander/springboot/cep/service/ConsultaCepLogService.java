@@ -1,8 +1,10 @@
 package desafio.santander.springboot.cep.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -24,16 +26,16 @@ public class ConsultaCepLogService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ConsultaCepLogResponse> listar(String cep, Boolean success, LocalDateTime inicio, LocalDateTime fim) {
+	public Page<ConsultaCepLogResponse> listar(String cep, Boolean success, LocalDateTime inicio, LocalDateTime fim,
+			int page, int size) {
 		validarPeriodo(inicio, fim);
 
 		Sort ordenacao = Sort.by(Sort.Direction.DESC, "consultedAt")
 				.and(Sort.by(Sort.Direction.DESC, "id"));
+		Pageable pageable = PageRequest.of(page, size, ordenacao);
 
-		return consultaCepLogRepository.findAll(filtrarPor(cep, success, inicio, fim), ordenacao)
-				.stream()
-				.map(ConsultaCepLogResponse::from)
-				.toList();
+		return consultaCepLogRepository.findAll(filtrarPor(cep, success, inicio, fim), pageable)
+				.map(ConsultaCepLogResponse::from);
 	}
 
 	private Specification<ConsultaCepLog> filtrarPor(String cep, Boolean success, LocalDateTime inicio,
