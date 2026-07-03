@@ -305,6 +305,15 @@ PostgreSQL: localhost:55432
 WireMock:   localhost:8081
 ```
 
+Documentacao da API apos iniciar a aplicacao:
+
+```text
+Swagger UI: http://localhost:8080/swagger-ui/index.html
+OpenAPI:    http://localhost:8080/v3/api-docs
+```
+
+Se a aplicacao for iniciada em outra porta, como `8082`, basta ajustar a porta nas URLs.
+
 O arquivo `.env` guarda as variáveis locais. O arquivo `.env.exemplo` serve como modelo.
 
 Comandos principais:
