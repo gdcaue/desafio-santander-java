@@ -56,7 +56,7 @@ Simula a API externa de CEP. Ele permite controlar cenários de sucesso e erro s
 Cenários mockados inicialmente:
 
 * CEP encontrado: `GET /cep/01001000` retorna `200`.
-* CEP não encontrado: `GET /cep/00000000` retorna `404` quando não existe um mock específico.
+* CEP não encontrado: `GET /cep/{cep com 8 dígitos}` retorna `404` quando não existe um mock específico.
 * CEP inválido: `GET /cep/{valor fora do padrão}` retorna `400`.
 
 ### PostgreSQL
@@ -104,6 +104,16 @@ Endpoint previsto:
 GET /api/consultas
 ```
 
+Filtros opcionais:
+
+```http
+GET /api/consultas?cep=01001000
+GET /api/consultas?success=true
+GET /api/consultas?success=false
+GET /api/consultas?inicio=2026-07-02T00:00:00&fim=2026-07-02T23:59:59
+GET /api/consultas?success=false&inicio=2026-07-02T00:00:00&fim=2026-07-02T23:59:59
+```
+
 Resposta prevista:
 
 ```json
@@ -115,10 +125,22 @@ Resposta prevista:
     "bairro": "Sé",
     "localidade": "São Paulo",
     "uf": "SP",
+    "httpStatusCode": 200,
+    "success": true,
+    "responseBody": "{\"cep\":\"01001000\",\"logradouro\":\"Praça da Sé\",\"bairro\":\"Sé\",\"localidade\":\"São Paulo\",\"uf\":\"SP\"}",
+    "errorMessage": null,
     "consultedAt": "2026-07-02T19:30:00"
   }
 ]
 ```
+
+Comportamentos esperados:
+
+* Sem filtros: retorna todos os logs, ordenados da consulta mais recente para a mais antiga.
+* `success=true`: retorna apenas consultas concluídas com sucesso.
+* `success=false`: retorna apenas tentativas com erro retornado pela API externa.
+* `cep`: filtra por um CEP específico.
+* `inicio` e `fim`: filtram por intervalo de data/hora da consulta.
 
 ## Contrato da API externa mockada
 
@@ -181,6 +203,9 @@ Tabela: `consulta_cep_logs`
 | `localidade` | `VARCHAR(255)` | Cidade/localidade retornada pela API externa |
 | `uf` | `VARCHAR(2)` | Unidade federativa retornada pela API externa |
 | `response_body` | `TEXT` | Resposta completa retornada pela API externa |
+| `http_status_code` | `SMALLINT` | Status HTTP retornado pela API externa ou status técnico da integração |
+| `success` | `BOOLEAN` | Indica se a consulta externa retornou sucesso |
+| `error_message` | `VARCHAR(255)` | Mensagem de erro quando a consulta externa falha |
 | `consulted_at` | `TIMESTAMP` | Data e hora em que a consulta foi realizada |
 
 ## Fluxo principal
