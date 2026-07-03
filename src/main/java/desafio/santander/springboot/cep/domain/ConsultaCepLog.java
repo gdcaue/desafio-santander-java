@@ -33,8 +33,17 @@ public class ConsultaCepLog {
 	@Column(length = 2)
 	private String uf;
 
-	@Column(name = "response_body", nullable = false, columnDefinition = "TEXT")
+	@Column(name = "response_body", columnDefinition = "TEXT")
 	private String responseBody;
+
+	@Column(name = "http_status_code", nullable = false)
+	private Short httpStatusCode;
+
+	@Column(nullable = false)
+	private Boolean success;
+
+	@Column(name = "error_message", length = 255)
+	private String errorMessage;
 
 	@Column(name = "consulted_at", nullable = false)
 	private LocalDateTime consultedAt;
@@ -42,18 +51,57 @@ public class ConsultaCepLog {
 	protected ConsultaCepLog() {
 	}
 
-	private ConsultaCepLog(CepResponse cepResponse, String responseBody, LocalDateTime consultedAt) {
-		this.cep = cepResponse.cep();
-		this.logradouro = cepResponse.logradouro();
-		this.bairro = cepResponse.bairro();
-		this.localidade = cepResponse.localidade();
-		this.uf = cepResponse.uf();
+	private ConsultaCepLog(
+			String cep,
+			String logradouro,
+			String bairro,
+			String localidade,
+			String uf,
+			String responseBody,
+			int httpStatusCode,
+			boolean success,
+			String errorMessage,
+			LocalDateTime consultedAt) {
+		this.cep = cep;
+		this.logradouro = logradouro;
+		this.bairro = bairro;
+		this.localidade = localidade;
+		this.uf = uf;
 		this.responseBody = responseBody;
+		this.httpStatusCode = (short) httpStatusCode;
+		this.success = success;
+		this.errorMessage = errorMessage;
 		this.consultedAt = consultedAt;
 	}
 
-	public static ConsultaCepLog from(CepResponse cepResponse, String responseBody, LocalDateTime consultedAt) {
-		return new ConsultaCepLog(cepResponse, responseBody, consultedAt);
+	public static ConsultaCepLog success(CepResponse cepResponse, String responseBody, int httpStatusCode,
+			LocalDateTime consultedAt) {
+		return new ConsultaCepLog(
+				cepResponse.cep(),
+				cepResponse.logradouro(),
+				cepResponse.bairro(),
+				cepResponse.localidade(),
+				cepResponse.uf(),
+				responseBody,
+				httpStatusCode,
+				true,
+				null,
+				consultedAt);
+	}
+
+	public static ConsultaCepLog failure(String cep, String responseBody, int httpStatusCode, String errorMessage,
+			LocalDateTime consultedAt) {
+		return new ConsultaCepLog(
+				cep,
+				null,
+				null,
+				null,
+				null,
+				responseBody,
+				httpStatusCode,
+				false,
+				errorMessage,
+				consultedAt);
 	}
 
 	public Long getId() {
@@ -82,6 +130,18 @@ public class ConsultaCepLog {
 
 	public String getResponseBody() {
 		return responseBody;
+	}
+
+	public Short getHttpStatusCode() {
+		return httpStatusCode;
+	}
+
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 
 	public LocalDateTime getConsultedAt() {

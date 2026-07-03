@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import desafio.santander.springboot.cep.dto.CepResponse;
 import desafio.santander.springboot.cep.exception.CepNaoEncontradoException;
@@ -31,13 +32,33 @@ public class WireMockCepClient implements CepClient {
 
 			String responseBody = response.getBody();
 			CepResponse cepResponse = objectMapper.readValue(responseBody, CepResponse.class);
-			return new CepClientResponse(cepResponse, responseBody);
+			return new CepClientResponse(cepResponse, responseBody, response.getStatusCode().value());
 		} catch (HttpClientErrorException.NotFound exception) {
-			throw new CepNaoEncontradoException(cep);
+			throw new CepNaoEncontradoException(
+					cep,
+					exception.getStatusCode().value(),
+					exception.getResponseBodyAsString());
 		} catch (HttpClientErrorException.BadRequest exception) {
-			throw new ErroIntegracaoCepException("A API externa recusou o formato do CEP informado.", exception);
+			throw new ErroIntegracaoCepException(
+					cep,
+					exception.getStatusCode().value(),
+					exception.getResponseBodyAsString(),
+					"A API externa recusou o formato do CEP informado.",
+					exception);
+		} catch (RestClientException exception) {
+			throw new ErroIntegracaoCepException(
+					cep,
+					502,
+					null,
+					"Erro ao consultar a API externa de CEP.",
+					exception);
 		} catch (Exception exception) {
-			throw new ErroIntegracaoCepException("Erro ao consultar a API externa de CEP.", exception);
+			throw new ErroIntegracaoCepException(
+					cep,
+					502,
+					null,
+					"Erro ao processar a resposta da API externa de CEP.",
+					exception);
 		}
 	}
 }
